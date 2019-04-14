@@ -32,6 +32,7 @@ class MyClass:
         for _ in range(1000):
             try:
                 x = next(gen)
+                sleep(0.01)
             except StopIteration:
                 break
         print('Process number: {}, value: {}'.format(n, x))
