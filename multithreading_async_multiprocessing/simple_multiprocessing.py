@@ -27,13 +27,14 @@ def my_gen(n):
 MyManager.register('MyGen', my_gen, proxytype=GeneratorProxy)
 
 
-def worker(n, lock, gen):
-    for _ in range(10000):
-        try:
-            x = next(gen)
-        except StopIteration:
-            break
-    print('Process number: {}, value: {}'.format(n, x))
+class MyClass:
+    def worker(self, n, gen):
+        for _ in range(1000):
+            try:
+                x = next(gen)
+            except StopIteration:
+                break
+        print('Process number: {}, value: {}'.format(n, x))
 
 
 
@@ -41,14 +42,16 @@ if __name__ == '__main__':
     manager = MyManager()
     manager.start()
 
-    my_gen = manager.MyGen(1000000)
+    my_gen_exm = manager.MyGen(1000000)
+
     lock = multiprocessing.Lock()
     processes = []
     manager = multiprocessing.Manager()
     t_start = perf_counter()
+    instance = MyClass()
 
     for i in range(100):
-        p = multiprocessing.Process(target=worker, args=(i, lock, my_gen))
+        p = multiprocessing.Process(target=instance.worker, args=(i, my_gen_exm))
         processes.append(p)
         p.start()
 
@@ -56,5 +59,5 @@ if __name__ == '__main__':
         p.join()
 
     t_end = perf_counter()
-
+    manager.shutdown()
     print(t_end - t_start)
