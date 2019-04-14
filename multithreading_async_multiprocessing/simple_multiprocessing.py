@@ -29,7 +29,12 @@ MyManager.register('MyGen', my_gen, proxytype=GeneratorProxy)
 
 def worker(n, lock, gen):
     for _ in range(10000):
-        print('Process number: {}, value: {}'.format(n, next(gen)))
+        try:
+            x = next(gen)
+        except StopIteration:
+            break
+    print('Process number: {}, value: {}'.format(n, x))
+
 
 
 if __name__ == '__main__':
@@ -42,7 +47,7 @@ if __name__ == '__main__':
     manager = multiprocessing.Manager()
     t_start = perf_counter()
 
-    for i in range(10):
+    for i in range(100):
         p = multiprocessing.Process(target=worker, args=(i, lock, my_gen))
         processes.append(p)
         p.start()
