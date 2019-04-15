@@ -5,16 +5,6 @@ from time import sleep
 from time import perf_counter
 
 
-class GeneratorProxy(BaseProxy):
-    _exposed_ = ['__next__']
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        return self._callmethod('__next__')
-
-
 class MyManager(BaseManager):
     pass
 
@@ -23,8 +13,16 @@ def my_gen(n):
     for i in range(n):
         yield i
 
+class MyClassGen:
+    def __init__(self, n):
+        self._generator = my_gen(n)
+    def __iter__(self):
+        return self
+    def __next__(self):
+        return next(self._generator)
 
-MyManager.register('MyGen', my_gen, proxytype=GeneratorProxy)
+MyManager.register('MyClassGen', my_gen, exposed=('__next__', '__iter__'))
+# MyManager.register('MyClassGen', MyClassGen, exposed=('__next__', '__iter__'))
 
 
 class MyClass:
@@ -38,12 +36,11 @@ class MyClass:
         print('Process number: {}, value: {}'.format(n, x))
 
 
-
 if __name__ == '__main__':
     manager = MyManager()
     manager.start()
 
-    my_gen_exm = manager.MyGen(1000000)
+    my_gen_exm = manager.MyClassGen(10000000)
 
     lock = multiprocessing.Lock()
     processes = []
