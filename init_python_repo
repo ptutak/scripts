@@ -114,6 +114,7 @@ EOF
 
 read -r -d '' SETUP_PY <<EOF
 from setuptools import setup
+import re
 
 
 def readme():
@@ -121,12 +122,19 @@ def readme():
         return f.read()
 
 
+def get_version():
+    version_pattern = re.compile(r'(?<=\[)\d+\.\d+\.\d+(?=\])')
+    with open('CHANGELOG.md') as f:
+        return version_pattern.findall(f.read())[-1]
+
+
 setup(name='$REPO_NAME',
-      version='0.0.1',
+      version=get_version(),
       description='The description',
       long_description=readme(),
       url='http://github.com/ptutak/$REPO_NAME',
       author='Piotr Tutak',
+      author_email='piotr.tutak@email.address.com',
       packages=['$REPO_NAME'],
       install_requires=[],
       test_suite='nose.collector',
@@ -135,8 +143,27 @@ setup(name='$REPO_NAME',
       zip_safe=False)
 EOF
 
+read -r -d '' CHANGELOG_MD <<EOF
+# Changelog
+
+## [0.0.1] - $(date +%Y-%m-%d)
+### Added
+- Initial commit
+EOF
+
+read -r -d '' README_MD <<EOF
+# $REPO_NAME
+
+[![version][version-badge]][CHANGELOG] [![license][license-badge]][LICENSE]
+
+## Initial README.md file
+- Initial commit for project $REPO_NAME
+EOF
+
 echo "$GITIGNORE" >.gitignore
 echo "$SETUP_PY" >setup.py
+echo "$CHANGELOG_MD" >CHANGELOG.md
+echo "$README_MD" >README.md
 
 mkdir "$REPO_NAME"
 touch "$REPO_NAME/__init__.py"
