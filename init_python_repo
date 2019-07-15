@@ -180,7 +180,3 @@ class FirstTestCase(TestCase):
 
 echo "# $REPO_NAME
     Initial README.md for $REPO_NAME" >README.md
-
-git init
-git add .
-git commit -am "Initial commit"
