@@ -175,13 +175,5 @@ touch "$REPO_NAME/__init__.py"
 mkdir "tests"
 touch "tests/__init__.py"
 
-echo "import $REPO_NAME
-from unittest import TestCase
-
-
-class FirstTestCase(TestCase):
-    def test_first(self):
-        pass" >"tests/test_$REPO_NAME.py"
-
 echo "# $REPO_NAME
     Initial README.md for $REPO_NAME" >README.md
