@@ -9,6 +9,7 @@ REPO_NAME="$1"
 mkdir -p "$REPO_NAME"
 cd "$REPO_NAME" || return
 REPO_NAME="$(basename "$REPO_NAME")"
+REPO_NAME="${REPO_NAME//\-/_}"
 
 read -r -d '' GITIGNORE <<'EOF'
 # Byte-compiled / optimized / DLL files
